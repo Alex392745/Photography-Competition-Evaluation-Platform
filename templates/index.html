@@ -47,7 +47,7 @@
 </head>
 <body>
 <div class="app">
-    <div class="mb-1 z-40 w-full mb-3">
+    <div class="z-40 w-full mb-3">
         <div class="max-w-8xl mx-auto text-lg">
           <div class="py-4 border-b border-slate-900/10 lg:px-1 lg:border-0 dark:border-slate-300/10 mx-4 lg:mx-0">
             <div class="flex justify-between items-center">
@@ -63,8 +63,8 @@
             <h1 class="text-3xl font-bold">光影摄协摄影比赛评审平台</h1>
             <h5 class="text-lg" style="color: red;">请认真评选每一张作品 每日限量评审50张 当日未完成任务的将被替补评审顶号评选</h5>
         </div>
-        <div class="flex flex-col flex-grow items-center mb-10" style="width: 80%;">
-            <table class="ui celled unstackable table">
+        <div class="flex flex-col flex-grow items-center mb-4" style="width: 80%;">
+            <table class="ui celled unstackable red table">
                 <thead>
                   <tr><th>ID</th>
                   <th>完成情况</th>
@@ -107,7 +107,7 @@
             </div>
         </div>
     </div>
-    <div class="flex flex-col items-end w-full">
+    <div class="flex flex-col items-end absolute bottom-0 w-full">
         {% include 'footer.html' %}
     </div>
 </div>
@@ -128,7 +128,7 @@
                 var row = response.data[i];
                 var tr = $("<tr></tr>");
                 tr.append($("<td></td>").text(row[0]));
-                tr.append($("<td></td>").text(row[1]+"/50"));
+                tr.append($("<td></td>").text(row[1]%50+"/50"));
                 tr.append($("<td></td>").text("day"+day));
                 $("tbody").append(tr);
             }
@@ -143,7 +143,10 @@
         },
         }).done((response) => {
             if (response.success){
-                $("#begin_button").text("开始评审("+response.data+"/50)");
+                $("#begin_button").text("开始评审("+response.data%50+"/50)");
+                $("#begin_button").on("click", function() {
+                    window.location.href = "/evaluation/"+response.data+1;
+                });
             }
         });
 

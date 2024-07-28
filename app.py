@@ -88,15 +88,165 @@ def com_query():
 def day():
     return {"code": 200, "success": True, "data": get_day()}
 
+@app.route("/api/v1/com/info", methods=["POST"])
+def com_info():
+    update_session()
+    try:
+        session_id = request.headers["X-Session-ID"]
+    except KeyError:
+        return {"code": 403, "success": False, "data": {"message": "Invalid request"}}
+    uid=session_find.get(session_id)
+    if not uid:
+        return {"code": 401, "success": False, "data": {"message": "Invalid session ID"}}
+    data = request.json
+    cid=data.get("cid")
+    if not data:
+        return {"code": 400, "success": False, "data": {"message": "Invalid request"}}
+    
+    conn = sqlite3.connect(database)
+    cursor = conn.cursor()
+    if(uid==1): 
+        cursor.execute("SELECT vote1 FROM cvote WHERE cid=?", (cid,))
+    if(uid==2): 
+        cursor.execute("SELECT vote2 FROM cvote WHERE cid=?", (cid,))
+    if(uid==3):
+        cursor.execute("SELECT vote3 FROM cvote WHERE cid=?", (cid,))
+    if(uid==4):
+        cursor.execute("SELECT vote4 FROM cvote WHERE cid=?", (cid,))
+    if(uid==5):
+        cursor.execute("SELECT vote5 FROM cvote WHERE cid=?", (cid,))
+    if(uid==6):
+        cursor.execute("SELECT vote6 FROM cvote WHERE cid=?", (cid,))
+    if(uid==7):
+        cursor.execute("SELECT vote7 FROM cvote WHERE cid=?", (cid,))
+    if(uid==8):
+        cursor.execute("SELECT vote8 FROM cvote WHERE cid=?", (cid,))
+    result = cursor.fetchone()
+    conn.close()
+
+    conn = sqlite3.connect(database)
+    cursor = conn.cursor()
+    cursor.execute("SELECT path FROM uploads WHERE cid=?", (cid,))
+    path = cursor.fetchone()
+    conn.close()
+
+    return {"code": 200, "success": True, "data": result, "path": path}
+
+
+@app.route("/api/v1/vote/query", methods=["POST"])
+def vote_query():
+    try:
+        session_id = request.headers["X-Session-ID"]
+    except KeyError:
+        return {"code": 400, "success": False, "data": {"message": "Invalid request"}}
+    uid=session_find.get(session_id)
+    if not uid:
+        return {"code": 401, "success": False, "data": {"message": "Invalid session ID"}}
+    data = request.json
+    cid=data.get("cid")
+    conn = sqlite3.connect(database)
+    cursor = conn.cursor()
+    cursor.execute("SELECT vote{} FROM cvote WHERE cid=? ".format(uid), (cid,))
+    result = cursor.fetchall()
+    conn.close()
+    return {"code": 200, "success": True, "data": result}
+
+@app.route("/api/v1/vote/vote", methods=["POST"])
+def vote_vote():
+    update_session()
+    try:
+        session_id = request.headers["X-Session-ID"]
+    except KeyError:
+        return {"code": 403, "success": False, "data": {"message": "Invalid request"}}
+    uid=session_find.get(session_id)
+    if not uid:
+        return {"code": 401, "success": False, "data": {"message": "Invalid session ID"}}
+    data = request.json
+    cid=data.get("cid")
+    conn = sqlite3.connect(database)
+    cursor = conn.cursor()
+    if(uid==1):
+        cursor.execute("UPDATE cvote SET vote1 = vote1 + 1 WHERE cid=?", (cid,))
+    if(uid==2):
+        cursor.execute("UPDATE cvote SET vote2 = vote2 + 1 WHERE cid=?", (cid,))
+    if(uid==3):
+        cursor.execute("UPDATE cvote SET vote3 = vote3 + 1 WHERE cid=?", (cid,))
+    if(uid==4):
+        cursor.execute("UPDATE cvote SET vote4 = vote4 + 1 WHERE cid=?", (cid,))
+    if(uid==5):
+        cursor.execute("UPDATE cvote SET vote5 = vote5 + 1 WHERE cid=?", (cid,))
+    if(uid==6):
+        cursor.execute("UPDATE cvote SET vote6 = vote6 + 1 WHERE cid=?", (cid,))
+    if(uid==7):
+        cursor.execute("UPDATE cvote SET vote7 = vote7 + 1 WHERE cid=?", (cid,))
+    if(uid==8):
+        cursor.execute("UPDATE cvote SET vote8 = vote8 + 1 WHERE cid=?", (cid,))
+    conn.commit()
+    conn.close()
+
+    conn = sqlite3.connect(database)
+    cursor = conn.cursor()
+    cursor.execute("UPDATE uservote SET day{} = day{} + 1 WHERE uid=?".format(get_day(), get_day()), (uid,))
+    conn.commit()
+    conn.close()
+    return {"code": 200, "success": True}
+
+@app.route("/api/v1/vote/cancel", methods=["POST"])
+def vote_cancel():
+    update_session()
+    try:
+        session_id = request.headers["X-Session-ID"]
+    except KeyError:
+        return {"code": 403, "success": False, "data": {"message": "Invalid request"}}
+    uid=session_find.get(session_id)
+    if not uid:
+        return {"code": 401, "success": False, "data": {"message": "Invalid session ID"}}
+    data = request.json
+    cid=data.get("cid")
+    conn = sqlite3.connect(database)
+    cursor = conn.cursor()
+    if(uid==1):
+        cursor.execute("UPDATE cvote SET vote1 = vote1 - 1 WHERE cid=?", (cid,))
+    if(uid==2):
+        cursor.execute("UPDATE cvote SET vote2 = vote2 - 1 WHERE cid=?", (cid,))
+    if(uid==3):
+        cursor.execute("UPDATE cvote SET vote3 = vote3 - 1 WHERE cid=?", (cid,))
+    if(uid==4):
+        cursor.execute("UPDATE cvote SET vote4 = vote4 - 1 WHERE cid=?", (cid,))
+    if(uid==5):
+        cursor.execute("UPDATE cvote SET vote5 = vote5 - 1 WHERE cid=?", (cid,))
+    if(uid==6):
+        cursor.execute("UPDATE cvote SET vote6 = vote6 - 1 WHERE cid=?", (cid,))
+    if(uid==7):
+        cursor.execute("UPDATE cvote SET vote7 = vote7 - 1 WHERE cid=?", (cid,))
+    if(uid==8):
+        cursor.execute("UPDATE cvote SET vote8 = vote8 - 1 WHERE cid=?", (cid,))
+    conn.commit()
+    conn.close()
+
+    conn = sqlite3.connect(database)
+    cursor = conn.cursor()
+    cursor.execute("UPDATE uservote SET day{} = day{} - 1 WHERE uid=?".format(get_day(), get_day()), (uid,))
+    conn.commit()
+    conn.close()
+    return {"code": 200, "success": True}
+
 @app.route("/favicon.ico")
 def favicon():
     return send_file("static/favicon/favicon.ico", mimetype="image/vnd.microsoft.icon")
+
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_file("uploads/"+filename, mimetype="image/vnd.microsoft.icon")
 
 
 @app.route("/")
 def index():
     return render_template("index.html")
 
+@app.route("/evaluation/<cid>")
+def evaluation(cid):
+    return render_template("evaluation.html", cid=cid)
 
 crontab = APScheduler()
 crontab.init_app(app)
