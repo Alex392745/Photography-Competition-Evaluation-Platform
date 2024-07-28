@@ -1,0 +1,52 @@
+html,body {
+    height: 100%;
+    padding: 5px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+div.app {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+button.ui.massive {
+    margin: 10px;
+    box-shadow: 0px 4px 5px rgba(0,0,0,0.1) !important;
+}
+
+button.ui.massive:hover {
+    box-shadow: 0px 6px 8px rgba(0,0,0,0.2) !important;
+}
+
+.code_display {
+    color: rgb(66, 145, 246);
+    font-size: 40px; /* 设置字号为30 */
+    text-align: center; /* 文字居中 */
+    font-weight: bold;
+    /* 如果你想要在页面的垂直方向上也居中，可以添加更多的样式 */
+    display: flex;
+    justify-content: center; /* 水平居中 */
+}
+
+.ui.modal.square {
+    width: 500px; /* 设置宽度 */
+    height: 450px; /* 设置高度，与宽度相等使其成为正方形 */
+    margin: auto !important; /* 添加!important以确保覆盖Semantic UI的默认样式 */
+}
+
+.ui.modal.sorrow {
+    width: 500px; /* 设置宽度 */
+    height: -200px; /* 设置高度，与宽度相等使其成为正方形 */
+    margin: auto !important; /* 添加!important以确保覆盖Semantic UI的默认样式 */
+}
+
+.ui.table td {
+    width: 100px; /* Set the desired width for the table cells */
+}
