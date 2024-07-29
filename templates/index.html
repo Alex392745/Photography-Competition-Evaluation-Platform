@@ -145,7 +145,7 @@
             if (response.success){
                 $("#begin_button").text("开始评审("+response.data%50+"/50)");
                 $("#begin_button").on("click", function() {
-                    window.location.href = "/evaluation/"+response.data+1;
+                    window.location.href = "/evaluation/"+(response.data+1);
                 });
             }
         });

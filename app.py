@@ -8,13 +8,13 @@ import uuid
 from datetime import datetime
 
 from flask import Flask, request, send_file, render_template
-from flask_apscheduler import APScheduler
+
 
 
 app = Flask(__name__)
 database = "database.db"
 
-begin_day=(2024,7,28)
+begin_day=(2024,7,29)
 
 session = []
 session_find = {}
@@ -146,13 +146,20 @@ def vote_query():
     cid=data.get("cid")
     conn = sqlite3.connect(database)
     cursor = conn.cursor()
+    print(cursor.execute("SELECT vote{} FROM cvote WHERE cid=?".format(uid), (cid,)).fetchone()[0])
+    if(cursor.execute("SELECT vote{} FROM cvote WHERE cid=?".format(uid), (cid,)).fetchone()[0]==-1):
+        cursor.execute("UPDATE cvote SET vote{} = 0 WHERE cid=?".format(uid), (cid,))
+        cursor.execute("UPDATE uservote SET day{} = day{} + 1 WHERE uid=?".format(get_day(), get_day()), (uid,))
+        conn.commit()
     cursor.execute("SELECT vote{} FROM cvote WHERE cid=? ".format(uid), (cid,))
     result = cursor.fetchall()
+    print(result)
     conn.close()
     return {"code": 200, "success": True, "data": result}
 
 @app.route("/api/v1/vote/vote", methods=["POST"])
 def vote_vote():
+    flag=0
     update_session()
     try:
         session_id = request.headers["X-Session-ID"]
@@ -166,33 +173,44 @@ def vote_vote():
     conn = sqlite3.connect(database)
     cursor = conn.cursor()
     if(uid==1):
-        cursor.execute("UPDATE cvote SET vote1 = vote1 + 1 WHERE cid=?", (cid,))
+        if(cursor.execute("SELECT vote1 FROM cvote WHERE cid=?", (cid,)).fetchone()[0]==-1):
+            flag=1
+        cursor.execute("UPDATE cvote SET vote1 = 1 WHERE cid=?", (cid,))
     if(uid==2):
-        cursor.execute("UPDATE cvote SET vote2 = vote2 + 1 WHERE cid=?", (cid,))
+        if(cursor.execute("SELECT vote2 FROM cvote WHERE cid=?", (cid,)).fetchone()[0]==-1):
+            flag=1
+        cursor.execute("UPDATE cvote SET vote2 = 1 WHERE cid=?", (cid,))
     if(uid==3):
-        cursor.execute("UPDATE cvote SET vote3 = vote3 + 1 WHERE cid=?", (cid,))
+        if(cursor.execute("SELECT vote3 FROM cvote WHERE cid=?", (cid,)).fetchone()[0]==-1):
+            flag=1
+        cursor.execute("UPDATE cvote SET vote3 = 1 WHERE cid=?", (cid,))
     if(uid==4):
-        cursor.execute("UPDATE cvote SET vote4 = vote4 + 1 WHERE cid=?", (cid,))
+        if(cursor.execute("SELECT vote4 FROM cvote WHERE cid=?", (cid,)).fetchone()[0]==-1):
+            flag=1
+        cursor.execute("UPDATE cvote SET vote4 = 1 WHERE cid=?", (cid,))
     if(uid==5):
-        cursor.execute("UPDATE cvote SET vote5 = vote5 + 1 WHERE cid=?", (cid,))
+        if(cursor.execute("SELECT vote5 FROM cvote WHERE cid=?", (cid,)).fetchone()[0]==-1):
+            flag=1
+        cursor.execute("UPDATE cvote SET vote5 = 1 WHERE cid=?", (cid,))
     if(uid==6):
-        cursor.execute("UPDATE cvote SET vote6 = vote6 + 1 WHERE cid=?", (cid,))
+        if(cursor.execute("SELECT vote6 FROM cvote WHERE cid=?", (cid,)).fetchone()[0]==-1):
+            flag=1
+        cursor.execute("UPDATE cvote SET vote6 = 1 WHERE cid=?", (cid,))
     if(uid==7):
-        cursor.execute("UPDATE cvote SET vote7 = vote7 + 1 WHERE cid=?", (cid,))
+        if(cursor.execute("SELECT vote7 FROM cvote WHERE cid=?", (cid,)).fetchone()[0]==-1):
+            flag=1
+        cursor.execute("UPDATE cvote SET vote7 = 1 WHERE cid=?", (cid,))
     if(uid==8):
-        cursor.execute("UPDATE cvote SET vote8 = vote8 + 1 WHERE cid=?", (cid,))
-    conn.commit()
-    conn.close()
-
-    conn = sqlite3.connect(database)
-    cursor = conn.cursor()
-    cursor.execute("UPDATE uservote SET day{} = day{} + 1 WHERE uid=?".format(get_day(), get_day()), (uid,))
+        if(cursor.execute("SELECT vote8 FROM cvote WHERE cid=?", (cid,)).fetchone()[0]==-1):
+            flag=1
+        cursor.execute("UPDATE cvote SET vote8 = 1 WHERE cid=?", (cid,))
     conn.commit()
     conn.close()
     return {"code": 200, "success": True}
 
 @app.route("/api/v1/vote/cancel", methods=["POST"])
 def vote_cancel():
+    flag=0
     update_session()
     try:
         session_id = request.headers["X-Session-ID"]
@@ -206,30 +224,42 @@ def vote_cancel():
     conn = sqlite3.connect(database)
     cursor = conn.cursor()
     if(uid==1):
-        cursor.execute("UPDATE cvote SET vote1 = vote1 - 1 WHERE cid=?", (cid,))
+        if(cursor.execute("SELECT vote1 FROM cvote WHERE cid=?", (cid,)).fetchone()[0]==-1):
+            flag=1
+        cursor.execute("UPDATE cvote SET vote1 = 0 WHERE cid=?", (cid,))
     if(uid==2):
-        cursor.execute("UPDATE cvote SET vote2 = vote2 - 1 WHERE cid=?", (cid,))
+        if(cursor.execute("SELECT vote2 FROM cvote WHERE cid=?", (cid,)).fetchone()[0]==-1):
+            flag=1
+        cursor.execute("UPDATE cvote SET vote2 = 0 WHERE cid=?", (cid,))
     if(uid==3):
-        cursor.execute("UPDATE cvote SET vote3 = vote3 - 1 WHERE cid=?", (cid,))
+        if(cursor.execute("SELECT vote3 FROM cvote WHERE cid=?", (cid,)).fetchone()[0]==-1):
+            flag=1
+        cursor.execute("UPDATE cvote SET vote3 = 0 WHERE cid=?", (cid,))
     if(uid==4):
-        cursor.execute("UPDATE cvote SET vote4 = vote4 - 1 WHERE cid=?", (cid,))
+        if(cursor.execute("SELECT vote4 FROM cvote WHERE cid=?", (cid,)).fetchone()[0]==-1):
+            flag=1
+        cursor.execute("UPDATE cvote SET vote4 = 0 WHERE cid=?", (cid,))
     if(uid==5):
-        cursor.execute("UPDATE cvote SET vote5 = vote5 - 1 WHERE cid=?", (cid,))
+        if(cursor.execute("SELECT vote5 FROM cvote WHERE cid=?", (cid,)).fetchone()[0]==-1):
+            flag=1
+        cursor.execute("UPDATE cvote SET vote5 = 0 WHERE cid=?", (cid,))
     if(uid==6):
-        cursor.execute("UPDATE cvote SET vote6 = vote6 - 1 WHERE cid=?", (cid,))
+        if(cursor.execute("SELECT vote6 FROM cvote WHERE cid=?", (cid,)).fetchone()[0]==-1):
+            flag=1
+        cursor.execute("UPDATE cvote SET vote6 = 0 WHERE cid=?", (cid,))
     if(uid==7):
-        cursor.execute("UPDATE cvote SET vote7 = vote7 - 1 WHERE cid=?", (cid,))
+        if(cursor.execute("SELECT vote7 FROM cvote WHERE cid=?", (cid,)).fetchone()[0]==-1):
+            flag=1
+        cursor.execute("UPDATE cvote SET vote7 = 0 WHERE cid=?", (cid,))
     if(uid==8):
-        cursor.execute("UPDATE cvote SET vote8 = vote8 - 1 WHERE cid=?", (cid,))
-    conn.commit()
-    conn.close()
-
-    conn = sqlite3.connect(database)
-    cursor = conn.cursor()
-    cursor.execute("UPDATE uservote SET day{} = day{} - 1 WHERE uid=?".format(get_day(), get_day()), (uid,))
+        if(cursor.execute("SELECT vote8 FROM cvote WHERE cid=?", (cid,)).fetchone()[0]==-1):
+            flag=1
+        cursor.execute("UPDATE cvote SET vote8 = 0 WHERE cid=?", (cid,))
     conn.commit()
     conn.close()
     return {"code": 200, "success": True}
+
+
 
 @app.route("/favicon.ico")
 def favicon():
@@ -247,10 +277,6 @@ def index():
 @app.route("/evaluation/<cid>")
 def evaluation(cid):
     return render_template("evaluation.html", cid=cid)
-
-crontab = APScheduler()
-crontab.init_app(app)
-crontab.start()
 
 
 if __name__ == "__main__":
